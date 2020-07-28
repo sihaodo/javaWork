@@ -1,0 +1,24 @@
+GET http://localhost:8080/emp?id=7369&id=7369
+Accept: */*
+Cache-Control: no-cache
+
+<> 2020-07-21T122852.200.html
+
+###
+
+GET http://localhost:8080/emp?id=7369&id=7369
+Accept: */*
+Cache-Control: no-cache
+
+<> 2020-07-21T122829.200.html
+
+###
+
+GET http://localhost:8080/emp?id=7369
+Accept: */*
+Cache-Control: no-cache
+
+<> 2020-07-21T122551.200.html
+
+###
+

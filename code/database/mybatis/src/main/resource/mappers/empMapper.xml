@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.database.EmpDao">
+    <select id="select" resultType="com.database.Emp">
+      SELECT * FROM EMP T WHERE T.EMPNO = #{id}
+    </select>
+
+    <insert id="insert" parameterType="com.database.Emp">
+        INSERT INTO EMP VALUES (#{empno},#{ename},#{job},#{mgr},#{hiredate},#{sal},#{comm},#{deptno})
+    </insert>
+
+    <update id="update">
+        UPDATE EMP SET MGR = 8888 WHERE EMPNO = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM EMP WHERE EMPNO = #{id}
+    </delete>
+</mapper>

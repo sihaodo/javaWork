@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springWeb.dao.DeptDao">
+    <select id="selectDept" resultType="com.springWeb.entity.Dept">
+      SELECT * FROM DEPT T WHERE T.DEPTNO = #{deptno}
+    </select>
+
+    <insert id="addDept" >
+      INSERT INTO DEPT VALUES(#{deptno},#{dname},#{loc},#{pic})
+    </insert>
+
+</mapper>

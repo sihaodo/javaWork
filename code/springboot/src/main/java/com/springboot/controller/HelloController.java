@@ -37,7 +37,7 @@ public class HelloController {
         return "hello world!";
     }
 
-    @GetMapping("/getEmp")
+    @GetMapping("/getEmp/{id}")
     @ResponseBody
     @RequiresPermissions("user:create")
     public String getEmp(){

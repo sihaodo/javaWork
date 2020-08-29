@@ -6,6 +6,8 @@ import com.springboot.service.EmpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class EmpServiceImple implements EmpService {
 
@@ -14,5 +16,9 @@ public class EmpServiceImple implements EmpService {
 
     public EmpEntity getOneEmp(){
         return empDao.getOneEmp();
+    }
+
+    public List<EmpEntity> getEmpList(){
+        return empDao.getEmpList();
     }
 }

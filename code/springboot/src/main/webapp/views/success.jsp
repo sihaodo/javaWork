@@ -6,6 +6,7 @@
 </head>
 <body>
     <h1>welcome ！${where}</h1>
+    <h1>token ！${token}</h1>
     <br/>
     <a href="/admin">admin</a>
     <br/>

@@ -1,6 +1,9 @@
 package com.springboot.config;
 
+import com.springboot.filter.JwtFilter;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
+import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
+import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
@@ -10,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
+import javax.servlet.Filter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -35,7 +39,17 @@ public class ShiroConfig {
     @Bean
     public SecurityManager securityManager(MyRealm myRealm) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager(myRealm);
+        DefaultSubjectDAO subjectDAO = new DefaultSubjectDAO();
+        DefaultSessionStorageEvaluator defaultSessionStorageEvaluator = new DefaultSessionStorageEvaluator();
+        defaultSessionStorageEvaluator.setSessionStorageEnabled(false);
+        subjectDAO.setSessionStorageEvaluator(defaultSessionStorageEvaluator);
+        securityManager.setSubjectDAO(subjectDAO);
         return securityManager;
+    }
+
+    @Bean
+    public JwtFilter jwtFilter() {
+        return new JwtFilter();
     }
 
     @Bean
@@ -70,7 +84,7 @@ public class ShiroConfig {
 
 
     @Bean
-    public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager) {
+    public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager,JwtFilter jwtFilter) {
         // 定义 shiroFactoryBean
         ShiroFilterFactoryBean shiroFilterFactoryBean=new ShiroFilterFactoryBean();
         // 设置自定义的 securityManager
@@ -85,19 +99,17 @@ public class ShiroConfig {
 
         // LinkedHashMap 是有序的，进行顺序拦截器配置
         Map<String,String> filterChainMap = new LinkedHashMap<>();
-        // 登录 URL 放行
-        //filterChainMap.put("/*", "authc");
         filterChainMap.put("/login", "anon");
-
-        // 以“/user/admin” 开头的用户需要身份认证，authc 表示要进行身份认证
-
-        // “/user/student” 开头的用户需要角色认证，是“admin”才允许
+        filterChainMap.put("/admin", "authc");
         filterChainMap.put("/student*", "roles[admin]");
-        // “/user/teacher” 开头的用户需要权限认证，是“user:create”才允许
         filterChainMap.put("/teacher*", "perms[\"user:create\"]");
-
-        // 配置 logout 过滤器
         filterChainMap.put("/logout", "logout");
+
+        LinkedHashMap<String, Filter> filterMap = new LinkedHashMap<>();
+        filterMap.put("jwt", jwtFilter);
+        shiroFilterFactoryBean.setFilters(filterMap);
+        // 过滤链定义，从上向下顺序执行，一般将放在最为下边
+        filterChainMap.put("/**", "jwt");
 
         // 设置 shiroFilterFactoryBean 的 FilterChainDefinitionMap
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainMap);

@@ -1,7 +1,9 @@
 package com.springboot.config;
 
+import com.springboot.entity.JwtToken;
 import com.springboot.entity.User;
 import com.springboot.service.UserService;
+import com.springboot.util.JwtUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -20,6 +22,11 @@ public class MyRealm extends AuthorizingRealm {
     private UserService userService;
 
     @Override
+    public boolean supports(AuthenticationToken token) {
+        return token instanceof JwtToken;
+    }
+
+    @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         // 获取用户名
         String username = (String) principalCollection.getPrimaryPrincipal();
@@ -34,17 +41,12 @@ public class MyRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         // 根据 Token 获取用户名，如果您不知道该 Token 怎么来的，先可以不管，下文会解释
-        String username = (String) authenticationToken.getPrincipal();
-        // 根据用户名从数据库中查询该用户
-        User user = userService.getUser(username);
-        if(user != null) {
-            // 把当前用户存到 Session 中
-            SecurityUtils.getSubject().getSession().setAttribute("user", user);
-            // 传入用户名和密码进行身份认证，并返回认证信息
-            AuthenticationInfo authcInfo = new SimpleAuthenticationInfo(user.getUsername(), user.getPasscode(), ByteSource.Util.bytes(user.getSalt()) ,"myRealm");
-            return authcInfo;
-        } else {
-            return null;
+        String token = (String) authenticationToken.getPrincipal();
+        String username = JwtUtil.getUsername(token);
+        if (username == null || !JwtUtil.verify(token, username)) {
+            throw new AuthenticationException("token认证失败！");
         }
+        AuthenticationInfo authcInfo = new SimpleAuthenticationInfo(username,token,"myRealm");
+        return authcInfo;
     }
 }

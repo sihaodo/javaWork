@@ -31,6 +31,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             executeLogin(request, response);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new AuthenticationException("Token失效请重新登录");
         }
     }
@@ -41,7 +42,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     @Override
     protected boolean isLoginAttempt(ServletRequest request, ServletResponse response) {
         HttpServletRequest req = (HttpServletRequest) request;
-        String token = req.getHeader("token");
+        String token = req.getHeader("X-Auth-Token");
         return token == null;
     }
 
@@ -51,7 +52,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     @Override
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        String token = httpServletRequest.getHeader("token");//Access-Token
+        String token = httpServletRequest.getHeader("X-Auth-Token");//Access-Token
         JwtToken jwtToken = new JwtToken(token);
         // 提交给realm进行登入,如果错误他会抛出异常并被捕获, 反之则代表登入成功,返回true
         getSubject(request, response).login(jwtToken);

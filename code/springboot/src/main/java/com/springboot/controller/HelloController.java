@@ -20,9 +20,6 @@ import java.util.Map;
 public class HelloController {
 
     @Autowired
-    private EmpService empService;
-
-    @Autowired
     private RedisUtil redisUtil;
 
 
@@ -37,20 +34,6 @@ public class HelloController {
         return "hello world!";
     }
 
-    @GetMapping("/getEmp/{id}")
-    @ResponseBody
-    @RequiresPermissions("user:create")
-    public String getEmp(){
-        EmpEntity empEntity = empService.getOneEmp();
-        return empEntity.toString();
-    }
-
-    @GetMapping("/toJsp")
-    public String toJsp(Model model){
-        model.addAttribute("name","sihao");
-        return "hello";
-    }
-
     @GetMapping("/redis")
     public String  redis(){
         redisUtil.set("sihao","dong");
@@ -61,7 +44,6 @@ public class HelloController {
         map.put("22","bb");
         redisUtil.hmset("lalala",map);
         return "redirect:/hello";
-
     }
 
 }

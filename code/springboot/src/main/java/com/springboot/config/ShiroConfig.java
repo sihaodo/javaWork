@@ -92,17 +92,10 @@ public class ShiroConfig {
 
         // 设置默认登录的 URL，身份认证失败会访问该 URL
         shiroFilterFactoryBean.setLoginUrl("/login");
-        // 设置成功之后要跳转的链接
-        shiroFilterFactoryBean.setSuccessUrl("/success");
-        // 设置未授权界面，权限认证失败会访问该 URL
-        shiroFilterFactoryBean.setUnauthorizedUrl("/unauth");
 
         // LinkedHashMap 是有序的，进行顺序拦截器配置
         Map<String,String> filterChainMap = new LinkedHashMap<>();
         filterChainMap.put("/login", "anon");
-        filterChainMap.put("/admin", "authc");
-        filterChainMap.put("/student*", "roles[admin]");
-        filterChainMap.put("/teacher*", "perms[\"user:create\"]");
         filterChainMap.put("/logout", "logout");
 
         LinkedHashMap<String, Filter> filterMap = new LinkedHashMap<>();
